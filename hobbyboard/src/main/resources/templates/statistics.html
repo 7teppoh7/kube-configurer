@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистики</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/categories/api/data1",
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    draw1(data)
+                },
+                error: function (e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/categories/api/data2",
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    draw2(data);
+                },
+                error: function (e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/categories/api/data3",
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    draw3(data);
+                },
+                error: function (e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+        });
+
+
+        function draw1(data1) {
+            var result = [];
+            result.push(['Жанр', 'Количество']);
+            for (var i = 0; i < data1.length; i++) {
+                result.push(data1[i]);
+            }
+            google.charts.load('current', {'packages': ['bar']});
+            google.charts.setOnLoadCallback(drawStuff);
+
+            function drawStuff() {
+                var data = new google.visualization.arrayToDataTable(result);
+
+                var options = {
+                    width: 800,
+                    legend: {position: 'none'},
+                    vAxis: {
+                        title: 'Количество'
+                    },
+                    hAxis: {
+                        title: 'Жанр'
+                    },
+                    bar: {groupWidth: "90%"}
+                };
+
+                var chart = new google.charts.Bar(document.getElementById('chart_div'));
+                chart.draw(data, google.charts.Bar.convertOptions(options));
+            }
+        }
+
+        function draw2(data2) {
+            var result = [];
+            result.push(['Пользователь', 'Покупки', {role: 'style'}]);
+            for (var i = 0; i < data2.length; i++) {
+                if (i === 0) data2[i].push('gold');
+                if (i === 1) data2[i].push('silver');
+                if (i === 2) data2[i].push('b87333');
+                result.push(data2[i]);
+            }
+
+            google.charts.load("current", {packages: ['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable(result);
+
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1,
+                    {
+                        calc: "stringify",
+                        sourceColumn: 1,
+                        type: "string",
+                        role: "annotation"
+                    },
+                    2]);
+
+                var options = {
+                    width: 600,
+                    height: 400,
+                    vAxis: {
+                        title: 'Количество покупок'
+                    },
+                    hAxis: {
+                        title: 'Пользователи'
+                    },
+                    bar: {groupWidth: "95%"},
+                    legend: {position: "none"},
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById("chart_div2"));
+                chart.draw(view, options);
+            }
+        }
+
+        function draw3(data3) {
+            var result = [];
+            result.push(['Производитель', 'Кол-во товаров']);
+            for (var i = 0; i < data3.length; i++) {
+                result.push(data3[i]);
+            }
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable(result);
+                var options = {
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                chart.draw(data, options);
+            }
+        }
+    </script>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container m-auto">
+    <h1>Количество продуктов по категориям</h1>
+    <div id="chart_div" style="width: 400px; height: 600px;"></div>
+    <h1>Топ 3 покупателей</h1>
+    <div id="chart_div2" style="width: 400px; height: 600px;"></div>
+    <h1>Доля брендов</h1>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

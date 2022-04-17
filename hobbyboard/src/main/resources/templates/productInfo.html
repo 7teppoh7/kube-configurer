@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Информация о товаре</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container" style="text-align: center">
+    <div class="row mx-auto">
+        <h1 class="h1" th:text="${'Информация о товаре ' + info.product.name + ' (ID ' + info.product.id + ')'}"
+            style="margin: auto"></h1>
+    </div>
+    <br><br>
+    <div class="row">
+        <h4 class="col h4">Дата создания: </h4>
+        <div class="col" th:text="${info.createDate}"></div>
+    </div>
+    <hr>
+    <div class="row">
+        <h4 class="col h4">Создатель: </h4>
+        <a class="btn-link col" th:href="@{${'/user/' + info.creator.id}}">
+            <div th:text="${info.creator.email + ' (ID ' + info.creator.id + ')'}"></div>
+        </a>
+    </div>
+    <hr>
+    <div class="row">
+        <h4 class="col h4">Дата обновления: </h4>
+        <div class="col" th:text="${info.updateDate}"></div>
+    </div>
+    <hr>
+    <div class="row">
+        <h4 class="col h4">Обновил: </h4>
+        <a class="btn-link col" th:href="@{${'/user/' + info.updater.id}}">
+            <div th:text="${info.updater.email + ' (ID ' + info.updater.id + ')'}"></div>
+        </a>
+    </div>
+    <br>
+    <hr>
+    <div class="row" style="text-align: right">
+        <a class="btn-link" th:href="@{${'/product/' + info.product.id}}">На страницу товара</a>
+    </div>
+    <br>
+    <div class="row" style="text-align: right">
+        <a class="btn-link" th:href="@{${'/admin/productsTable'}}">К таблице товаров</a>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

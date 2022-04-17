@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>HobbyBoard</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <script>
+        var price;
+
+        $(document).ready(function () {
+            price = $("#product-price").val();
+
+            $(".button-add").click(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                add_to_basket(event);
+
+            });
+
+            $(".button-remove").click(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                remove_from_basket(event);
+
+            });
+        });
+
+        function add_to_basket(event) {
+            var product = {};
+            product["id"] = $(event.currentTarget).val();
+
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/basket/api/add",
+                data: JSON.stringify(product),
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                cache: false,
+                timeout: 600000,
+                error: function (e) {
+                    $(event.currentTarget).text("В корзине");
+                    $(event.currentTarget).attr("class", "btn btn-lblue btn-sm button-remove");
+                    $(event.currentTarget).off();
+                    $(".button-remove").click(function (event) {
+
+                        //stop submit the form, we will post it manually.
+                        event.preventDefault();
+
+                        remove_from_basket(event);
+
+                    });
+                }
+            });
+        }
+
+        function remove_from_basket(event) {
+            event.preventDefault();
+            var product = {};
+            product["id"] = $(event.currentTarget).val();
+
+            //$("#btn-search").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/basket/api/remove",
+                data: JSON.stringify(product),
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                cache: false,
+                timeout: 600000,
+                error: function (e) {
+                    $(event.currentTarget).text(price + "₽");
+                    $(event.currentTarget).attr("class", "btn btn-lblue btn-sm button-add");
+                    $(event.currentTarget).off();
+                    $(".button-add").click(function (event) {
+
+                        //stop submit the form, we will post it manually.
+                        event.preventDefault();
+
+                        add_to_basket(event);
+
+                    });
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container mainContainer" style="margin-top: 100px;">
+    <input type="hidden" th:value="${product.price}" id="product-price">
+    <div class="row">
+        <div class="col-10">
+            <h1 class="h1" th:text="${product.name}"></h1>
+            <p><a class="d-inline-block mr-2" th:each="cat : ${product.categories}" th:href="@{'/?category=' + ${cat.id}}" th:text="${cat.name}" style="font-style: italic; text-decoration: none; color: #332f2c;"></a></p>
+        </div>
+        <div class="col-2">
+            <p class="mb-0">Артикул:</p>
+            <i th:text="${product.code}"></i>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <div class="row">
+                <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel"
+                     style="text-align: center; margin: auto; width: 500px">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img th:src="@{${'/img/' + product.mainPhoto.photo}}" th:alt="${product.name}"
+                                 class="d-block mx-auto w-100" height="500" width="800">
+                        </div>
+                        <div th:each="photo : ${product.photos}" class="carousel-item">
+                            <img th:src="@{${'/img/' + photo.photo}}" th:alt="${product.name}"
+                                 class="d-block mx-auto w-100" height="500" width="800">
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleFade" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div>
+            <div style="font-size: 1.2em">
+                <h2 class="h2">Характеристики:</h2>
+                <br>
+                <p>
+                    <b class="mb-0">Количество игроков: </b>
+                    <span th:text="${product.minPlayers + ' – ' + product.maxPlayers + ' человек'}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Время партии: </b>
+                    <span th:text="${'от ' +  product.minTime + ' до ' + product.maxTime + ' минут'}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Возрастное ограничение: </b>
+                    <span th:text="${product.age + '+ (' + product.ageCategory + ')'}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Оригинальное название: </b>
+                    <span th:text="${product.originalName}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Дата создания: </b>
+                    <span th:text="${product.releaseYear}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Производитель: </b>
+                    <span th:text="${product.maker.name}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Описание: </b>
+                    <span th:utext="${product.description}"></span>
+                </p>
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-2">
+            <h5 class="h5">В корзину:</h5>
+            <th:block th:if="${productsInBasket.contains(product)}">
+                <button th:href="@{${'/toBasket'}}"
+                        class="btn btn-lblue btn-sm button-remove" id="product-button"
+                        th:value="${product.getId()}">В корзине
+                </button>
+                <i th:text="'Количество: ' + ${product.getCount()}"></i>
+            </th:block>
+            <th:block th:unless="${productsInBasket.contains(product)}">
+                <button th:href="@{${'/toBasket'}}"
+                        class="btn btn-lblue btn-sm button-add" id="product-button"
+                        th:value="${product.getId()}" th:text="${product.price} + '₽'">
+                </button>
+                <i th:text="'Количество: ' + ${product.getCount()}"></i>
+            </th:block>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

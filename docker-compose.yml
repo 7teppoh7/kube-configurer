@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+#  mlp:
+#    image: mlp:v0.01
+#    build:
+#      context: mlp-service
+#      dockerfile: docker/Dockerfile
+#    container_name: mlp
+#    depends_on:
+#      - postgres
+#    environment:
+#      POSTGRES_HOSTNAME: postgres
+#    expose:
+#      - 8080
+#    ports:
+#      - 9090:8080
+  postgres:
+    image: library/postgres:13.0-alpine
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: kube-configurer
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+      - ./db/scripts:/docker-entrypoint-initdb.d
+

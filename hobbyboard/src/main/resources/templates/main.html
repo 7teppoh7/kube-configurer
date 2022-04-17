@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>HobbyBoard</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript">
+        var names;
+
+        $(document).ready(function () {
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/product/api/products",
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    names = data;
+                    $("#productName").autocomplete({
+                        minLength: 0,
+                        source: names
+                    });
+                },
+                error: function (e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+
+            $(".button-add").click(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                add_to_basket(event);
+
+            });
+
+            $(".button-remove").click(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                remove_from_basket(event);
+
+            });
+
+            $("#filter-form").submit(function () {
+                $("#filter-form").find('input').each(function () {
+                    var input = $(this);
+                    if (!input.val()) {
+                        input.remove(); // or input.prop('disabled', true);
+                    }
+                    if (input.val() != null && input.val() === 'on') {
+                        input.val(true);
+                    }
+                });
+                $("#filter-form").find('option').each(function () {
+                    var input = $(this);
+                    if (input.val() != null && input.val() === 'любая') {
+                        input.prop('disabled', true);
+                    }
+                });
+            });
+
+            $("#search-form").submit(function () {
+                $("#search-form").find('input').each(function () {
+                    var input = $(this);
+                    if (!input.val()) {
+                        input.remove(); // or input.prop('disabled', true);
+                    }
+                });
+            });
+
+        });
+
+        function fire_ajax_submit() {
+            var search = {};
+            search["name"] = $("#productName").val();
+
+            $("#btn-search").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/product/api/search",
+                data: JSON.stringify(search),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+
+                    var json = "<h4>Ajax Response</h4>&lt;pre&gt;"
+                        + JSON.stringify(data, null, 4) + "&lt;/pre&gt;";
+                    $('#feedback').html(json);
+
+                    console.log("SUCCESS : ", data);
+                    $("#btn-search").prop("disabled", false);
+
+                },
+                error: function (e) {
+                    console.log("ERROR : ", e);
+                    $("#btn-search").prop("disabled", false);
+
+                }
+            });
+
+        }
+
+        function add_to_basket(event) {
+            var product = {};
+            product["id"] = $(event.currentTarget).val();
+
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/basket/api/add",
+                data: JSON.stringify(product),
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                cache: false,
+                timeout: 600000,
+                error: function (e) {
+                    $(event.currentTarget).text("Добавлено");
+                    $(event.currentTarget).attr("class", "btn btn-lblue btn-sm button-remove");
+                    $(event.currentTarget).off();
+                    $(".button-remove").click(function (event) {
+
+                        //stop submit the form, we will post it manually.
+                        event.preventDefault();
+
+                        remove_from_basket(event);
+
+                    });
+                }
+            });
+
+        }
+
+        function remove_from_basket(event) {
+            event.preventDefault();
+            var product = {};
+            product["id"] = $(event.currentTarget).val();
+
+            //$("#btn-search").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/basket/api/remove",
+                data: JSON.stringify(product),
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                cache: false,
+                timeout: 600000,
+                error: function (e) {
+                    $(event.currentTarget).text("В корзину");
+                    $(event.currentTarget).attr("class", "btn btn-lblue btn-sm button-add");
+                    $(event.currentTarget).off();
+                    $(".button-add").click(function (event) {
+
+                        //stop submit the form, we will post it manually.
+                        event.preventDefault();
+
+                        add_to_basket(event);
+
+                    });
+                }
+            });
+
+        }
+    </script>
+
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="mainContainer" style="margin-top: 100px;">
+    <div class="row mx-5">
+        <div class="col-10">
+            <div class="row m-auto">
+                <h5 class="h5">Ищете что-то конкретное?</h5>
+            </div>
+            <div>
+                <form class="input-group" id="search-form" type="get" th:action="@{/}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Введите название..."
+                               aria-label="Введите название..."
+                               aria-describedby="button-addon2" name="search" id="productName"
+                               th:value="${searchDto.search}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Поиск</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="minPrice" th:if="${searchDto.minPrice!=null}"
+                           th:value="${searchDto.minPrice}">
+                    <input type="hidden" name="maxPrice" th:if="${searchDto.maxPrice!=null}"
+                           th:value="${searchDto.maxPrice}">
+                    <input type="hidden" name="minPlayers" th:if="${searchDto.minPlayers!=null}"
+                           th:value="${searchDto.minPlayers}">
+                    <input type="hidden" name="maxPlayers" th:if="${searchDto.maxPlayers!=null}"
+                           th:value="${searchDto.maxPlayers}">
+                    <input type="hidden" name="minAge" th:if="${searchDto.minAge!=null}" th:value="${searchDto.minAge}">
+                    <input type="hidden" name="maxAge" th:if="${searchDto.maxAge!=null}" th:value="${searchDto.maxAge}">
+                    <input type="hidden" name="ageCategory" th:if="${searchDto.ageCategory!=null}"
+                           th:value="${searchDto.ageCategory}">
+                    <input type="hidden" name="rate" th:if="${searchDto.rate!=null}" th:value="${searchDto.rate}">
+                    <input type="hidden" name="minTime" th:if="${searchDto.minTime!=null}"
+                           th:value="${searchDto.minTime}">
+                    <input type="hidden" name="maxTime" th:if="${searchDto.maxTime!=null}"
+                           th:value="${searchDto.maxTime}">
+                    <th:block th:each="maker : ${searchDto.maker}">
+                        <input type="hidden" name="maker" th:value="${maker.id}">
+                    </th:block>
+                    <th:block th:each="category : ${searchDto.category}">
+                        <input type="hidden" name="category" th:value="${category.id}">
+                    </th:block>
+                    <input type="hidden" name="isDependence" th:if="${searchDto.isDependence!=null}"
+                           th:value="${searchDto.isDependence}">
+                    <div class="input-group">
+                        <div class="mt-2">
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle d-inline-block" type="button"
+                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                    Сортировать по
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="btn-link dropdown-item" name="sort"
+                                            th:classappend="${searchDto.sort.equals('rateD')?'disabled':''}"
+                                            th:value="'rateD'">рейтингу (по убыванию)
+                                    </button>
+                                    <button class="btn-link dropdown-item" name="sort"
+                                            th:classappend="${searchDto.sort.equals('rateA')?'disabled':''}"
+                                            th:value="'rateA'">рейтингу (по возрастанию)
+                                    </button>
+                                    <button class="btn-link dropdown-item" name="sort"
+                                            th:classappend="${searchDto.sort.equals('priceD')?'disabled':''}"
+                                            th:value="'priceD'">цене (по убыванию)
+                                    </button>
+                                    <button class="btn-link dropdown-item" name="sort"
+                                            th:classappend="${searchDto.sort.equals('priceA')?'disabled':''}"
+                                            th:value="'priceA'">цене (по возрастанию)
+                                    </button>
+                                    <button class="btn-link dropdown-item" name="sort"
+                                            th:classappend="${searchDto.sort.equals('dateD')?'disabled':''}"
+                                            th:value="'dateD'">дате (по убыванию)
+                                    </button>
+                                    <button class="btn-link dropdown-item" name="sort"
+                                            th:classappend="${searchDto.sort.equals('dateA')?'disabled':''}"
+                                            th:value="'dateA'">дате (по возрастанию)
+                                    </button>
+                                </div>
+                                <div class="d-inline-block" th:switch="${searchDto.sort}">
+                                    <div th:case="'rateD'">рейтингу (по убыванию)</div>
+                                    <div th:case="'rateA'">рейтингу (по возрастанию)</div>
+                                    <div th:case="'priceD'">цене (по убыванию)</div>
+                                    <div th:case="'priceA'">цене (по возрастанию)</div>
+                                    <div th:case="'dateD'">дате (по убыванию)</div>
+                                    <div th:case="'dateA'">дате (по возрастанию)</div>
+                                    <div th:case="null"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group" style="text-align: right">
+                        <div class="mt-2">
+                            <i th:text="${'Количество товаров: ' + products.size()}"></i>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div class="ui-112 text-center" style="width: 100%">
+                    <!-- container -->
+                    <div class="row">
+                        <th:block th:each="prod : ${products}">
+                            <div class="myProduct">
+                                <!-- Image Box #1 Item -->
+                                <div class="ui-112-item">
+                                    <div class="ui-112-img">
+                                        <!-- Image -->
+                                        <img class="img-thumbnail"
+                                             th:src="@{${'/img/' + prod.mainPhoto.photo}}" th:alt="${prod.name}"
+                                             alt="" height="172"
+                                             width="250">
+                                        <div class="image-hover">
+                                            <!-- Image Caption -->
+                                            <div class="image-caption">
+                                                <a th:href="@{${'/img/' + prod.mainPhoto.photo}}"
+                                                   class="lightbox"><i class="fa fa-search bg-lblue"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Image Box #1 caption -->
+                                    <div class="ui-112-cap">
+                                        <!-- Heading-->
+                                        <h4 class="mb-0"><a th:href="@{${'/product/' + prod.id}}"
+                                                            th:text="${prod.name}"></a></h4>
+                                        <p class="mt-0"><i th:text="${prod.originalName}"></i></p>
+                                        <p th:text="${prod.price} + '₽'"></p>
+                                        <!-- Button -->
+                                        <th:block th:if="${prod.count.equals(0)}">
+                                            <button class="btn btn-secondary btn-sm disabled"
+                                                    th:value="${prod.getId()}">Отсутствует
+                                            </button>
+                                        </th:block>
+                                        <th:block th:unless="${prod.count.equals(0)}">
+                                            <th:block th:if="${productsInBasket.contains(prod)}">
+                                                <button th:href="@{${'/toBasket'}}"
+                                                        class="btn btn-lblue btn-sm button-remove"
+                                                        th:value="${prod.getId()}">Добавлено
+                                                </button>
+                                            </th:block>
+                                            <th:block th:unless="${productsInBasket.contains(prod)}">
+                                                <button th:href="@{${'/toBasket'}}"
+                                                        class="btn btn-lblue btn-sm button-add"
+                                                        th:value="${prod.getId()}">В корзину
+                                                </button>
+                                            </th:block>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-2 p-0">
+            <div style="background-color: white;">
+                <form class="m-3" method="get" th:action="@{/}" id="filter-form" th:object="${searchDto}">
+                    <label for="minPrice" class="mt-2"><b>Цена, ₽</b></label>
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <input type="number" class="form-control" name="minPrice" id="minPrice"
+                                   th:field="*{minPrice}"
+                                   th:placeholder="${'от ' + minimalPrice}">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="maxPrice" id="maxPrice"
+                                   th:field="*{maxPrice}"
+                                   th:placeholder="${'до ' + maximumPrice}">
+                        </div>
+                    </div>
+                    <label for="minPrice"><b>Число игроков</b></label>
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <input type="number" class="form-control" name="minPlayers" id="minPlayers"
+                                   th:field="*{minPlayers}"
+                                   th:placeholder="${'от 1'}">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="maxPlayers" id="maxPlayers"
+                                   th:field="*{maxPlayers}"
+                                   th:placeholder="${'до ' + maximumPlayers}">
+                        </div>
+                    </div>
+                    <label for="minAge"><b>Возраст</b></label>
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <input type="number" class="form-control" name="minAge" id="minAge" th:field="*{minAge}"
+                                   th:placeholder="${'от 0'}">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="maxAge" id="maxAge" th:field="*{maxAge}"
+                                   th:placeholder="${'до 18'}">
+                        </div>
+                    </div>
+                    <label for="ageCategory"><b>Возрастная категория</b></label>
+                    <div class="input-group mb-3">
+                        <select class="form-control" id="ageCategory" name="ageCategory">
+                            <option>любая</option>
+                            <option value="G">G</option>
+                            <option value="PG">PG</option>
+                            <option value="R">R</option>
+                            <option value="X">X</option>
+                        </select>
+                    </div>
+                    <label for="rate"><b>Рейтинг</b></label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" name="rate" id="rate" step="0.1" th:field="*{rate}"
+                               th:placeholder="${'от 0'}">
+                    </div>
+                    <label for="minTime"><b>Время партии, мин</b></label>
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <input type="number" class="form-control" name="minTime" id="minTime" th:field="*{minTime}"
+                                   th:placeholder="${'от 5'}">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="maxTime" id="maxTime" th:field="*{maxTime}"
+                                   th:placeholder="${'до ' + maximumTime}">
+                        </div>
+                    </div>
+                    <label><b>Категории</b></label>
+                    <div class="mb-3">
+                        <div class="form-check" th:each="category : ${categories}">
+                            <input class="form-check-input" type="checkbox" name="category"
+                                   th:id="${'category' + category.id}" th:value="${category.id}"
+                                   th:checked="${searchDto.category==null?false:searchDto.category.contains(category)}">
+                            <label class="form-check-label" th:for="${'category' + category.id}"
+                                   th:text="${category.name}">
+                            </label>
+                        </div>
+                    </div>
+                    <label><b>Производитель</b></label>
+                    <div class="mb-3">
+                        <div class="form-check" th:each="maker : ${makers}">
+                            <input class="form-check-input" type="checkbox" name="maker" th:id="${'maker' + maker.id}"
+                                   th:value="${maker.id}"
+                                   th:checked="${searchDto.maker==null?false:searchDto.maker.contains(maker)}">
+                            <label class="form-check-label" th:for="${'maker' + maker.id}" th:text="${maker.name}">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="isDependence" id="isDependence"
+                                   th:checked="${searchDto.isDependence}">
+                            <label class="form-check-label" for="isDependence"><b>
+                                Только дополнения
+                            </b>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <button class="btn btn-secondary" type="submit">Фильтр</button>
+                        </div>
+                        <div class="col">
+                            <a class="btn btn-link" th:href="@{/}">Сбросить</a>
+                        </div>
+                    </div>
+                    <br>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.lightbox').magnificPopup({type: 'image'});
+    });
+</script>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

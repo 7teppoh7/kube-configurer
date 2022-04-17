@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <script>
+        $(document).ready(function () {
+
+            $(".button-remove").click(function (event) {
+                event.preventDefault();
+                remove_from_basket(event);
+            });
+
+            $(".dec").click(function (event) {
+                event.preventDefault();
+                var curT = $(event.currentTarget);
+                var product = {};
+                product["id"] = curT.val();
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/basket/api/dec",
+                    data: JSON.stringify(product),
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+                        $("#"+curT.val()).val(data);
+                    }
+                });
+
+            });
+
+            $(".inc").click(function (event) {
+                event.preventDefault();
+                var curT = $(event.currentTarget);
+                var product = {};
+                product["id"] = curT.val();
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/basket/api/inc",
+                    data: JSON.stringify(product),
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    cache: false,
+                    timeout: 600000,
+                    success: function (data) {
+                        $("#"+curT.val()).val(data);
+                    }
+                });
+            });
+
+            // $(".dec").click(function (event) {
+            //     event.preventDefault();
+            //     var curT = $(event.currentTarget);
+            //     document.getElementById(curT.val()).stepDown();
+            // });
+            //
+            // $(".inc").click(function (event) {
+            //     event.preventDefault();
+            //     var curT = $(event.currentTarget);
+            //     document.getElementById(curT.val()).stepUp();
+            // });
+        });
+
+        function remove_from_basket(event) {
+
+            var product = {};
+            product["id"] = $(event.currentTarget).val();
+
+            //$("#btn-search").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/basket/api/remove",
+                data: JSON.stringify(product),
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                cache: false,
+                timeout: 600000,
+                error: function (e) {
+                    $(event.currentTarget).parent().parent().remove()
+                }
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container" style="margin-top: 100px;">
+    <th:block sec:authorize="hasAnyAuthority('USER')">
+        <h3 class="h3" th:text="${'Корзина пользователя ' + #authentication.name}"></h3>
+    </th:block>
+    <th:block th:if="${baskets.size() > 0}">
+        <div class="alert alert-info" th:if="${message}" th:text="${message}"></div>
+        <table class="table table-hover">
+            <thread>
+                <tr>
+                    <th>№</th>
+                    <th>Товар</th>
+                    <th>Количество</th>
+                    <th>Дата добавления</th>
+                    <th>Купить</th>
+                    <th>Удалить</th>
+                </tr>
+            </thread>
+            <tbody>
+            <tr th:each="basket, index : ${baskets}" class="myItem">
+                <form method="post" th:action="@{'/buy'}">
+                    <td th:text="${index.count}"></td>
+                    <td>
+                        <div class="d-inline-block m-3">
+                            <img class="img-thumbnail" th:src="@{${'/img/' + basket.product.mainPhoto.photo}}"
+                                 th:alt="${basket.product.name}"
+                                 height="100"
+                                 width="100">
+                        </div>
+                        <div class="d-inline-block">
+                            <h5 th:text="${basket.product.name}"></h5>
+                            <i th:text="${'(' + basket.product.originalName + ')'}"></i>
+                            <p th:text="${basket.product.rate}"></p>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-info btn-sm incr dec" th:value="${basket.product.id}">–</button>
+                        <input th:id="${basket.product.id}" type="number" name="countToBuy" min="1"
+                               th:max="${basket.product.count}" step="1"
+                               th:value="${basket.count}" readonly>
+                        <button class="btn btn-info btn-sm incr inc" th:value="${basket.product.id}">+</button>
+                    </td>
+                    <td th:text="${basket.addDate}"></td>
+                    <td>
+                        <button type="submit" name="product" th:value="${basket.product.id}"
+                                class="btn btn-primary">Купить
+                        </button>
+                    </td>
+                    <td>
+                        <button th:href="@{${'/del'}}"
+                                class="btn btn-secondary button-remove" th:value="${basket.product.getId()}">Удалить
+                        </button>
+                    </td>
+                </form>
+            </tr>
+            </tbody>
+        </table>
+        <form method="post" th:action="@{'/buyAll'}" class="text-right">
+            <button type="submit"
+                    class="btn btn-warning">Купить всё
+            </button>
+        </form>
+    </th:block>
+    <th:block th:unless="${baskets.size() > 0}">
+        <div><i>Корзина пуста</i></div>
+    </th:block>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

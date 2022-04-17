@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Регистрация в HobbyBoard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet"
+          href="/webjars/bootstrap/4.5.0/css/bootstrap.css"/>
+    <script type="text/javascript"
+            src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet"
+          th:href="@{/css/public.css}"/>
+</head>
+<body class="text-center">
+<form class="form-signin" th:action="@{/register}" th:object="${userDto}" method="post" enctype="multipart/form-data">
+    <h1 class="h3 mb-3 font-weight-normal">Введите свои данные</h1>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}">
+    </div>
+    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert alert-danger"
+         role="alert">Неправильно заполнено поле
+    </div>
+    <label for="email" class="sr-only">E-mail</label>
+    <input type="text" id="email" name="email" class="form-control" placeholder="email" th:field="*{email}" required
+           autofocus>
+    <div th:if="${#fields.hasErrors('nickName')}" th:errors="*{nickName}" class="alert alert-danger"
+         role="alert">Неправильно заполнено поле
+    </div>
+    <label for="nickName" class="sr-only">E-mail</label>
+    <input type="text" id="nickName" name="nickName" class="form-control" placeholder="Никнейм" th:field="*{nickName}"
+           required
+           autofocus>
+    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="alert alert-danger"
+         role="alert">Неправильно заполнено поле
+    </div>
+    <label for="inputPassword" class="sr-only">Пароль</label>
+    <input type="password" id="inputPassword" name="password" th:field="*{password}" class="form-control myPass"
+           placeholder="Пароль" required>
+    <label for="inputFile" class="sr-only">Аватар</label>
+    <input type="file" id="inputFile" name="avatar" class="form-control-file myFile" placeholder="Аватар"
+           th:field="*{avatar}">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Зарегистрироваться</button>
+    <hr/>
+    <p class="text-muted">Уже зарегестрированы? <a th:href="@{/login}">Войдите</a> в HobbyBoard.</p>
+</form>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

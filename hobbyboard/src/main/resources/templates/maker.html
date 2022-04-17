@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>HobbyBoard</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container mainContainer" style="margin-top: 100px;">
+    <h1 class="h1" th:text="${maker.name}"></h1>
+    <div class="row">
+        <img class="img-thumbnail" th:src="@{${'/img/' + maker.logo}}" th:alt="${maker.name}">
+    </div>
+    <br/>
+    <p><i th:text="${maker.description}"></i></p>
+    <div th:replace="fragments/footer :: myFooter"></div>
+</div>
+</body>
+</html>

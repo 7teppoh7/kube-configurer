@@ -1,0 +1,58 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:fragment="myHeaderHead">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet"
+              href="/webjars/bootstrap/4.5.0/css/bootstrap.css"/>
+        <link rel="stylesheet"
+              th:href="@{/css/main.css}"/>
+        <script type="text/javascript"
+                src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    </div>
+</head>
+<body>
+<div th:fragment="myHeaderNav" style="margin-bottom: 100px">
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <a class="navbar-brand" href="/">HobbyBoard</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" th:classappend="${products}?'active':''">
+                        <a class="nav-link" th:href="@{/}">Товары</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${baskets}?'active':''" th:href="@{/basket}">Корзина</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${user}?'active':''" th:href="@{/profile}">Личный кабинет</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'MODERATOR')">
+                        <a class="nav-link" th:classappend="${adminPage}?'active':''" th:href="@{/admin}">Администрирование</a>
+                    </li>
+                </ul>
+                <th:block sec:authorize="hasAnyAuthority('USER')">
+                    <form class="form-inline mt-2 mt-md-0" th:action="@{/logout}" method="post">
+                        <a th:href="@{/profile}" style="margin-right: 10px">
+                            <div style="color: white" sec:authentication="name"></div>
+                        </a>
+                        <img th:src="@{${'/img/' + #authentication.getPrincipal().avatar}}" class="mini_ava"
+                             alt="avatar"/>
+                        <input class="btn btn-outline-light" type="submit" value="Выйти"/>
+                    </form>
+                </th:block>
+                <th:block sec:authorize="isAnonymous()">
+                    <a class="btn btn-primary" th:href="@{/login}">Авторизироваться</a>
+                </th:block>
+            </div>
+        </nav>
+    </header>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Добро пожаловать | HobbyBoard</title>
+    <link rel="stylesheet"
+          href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
+
+</head>
+
+<body class="container" style="text-align: center; margin-top: 300px">
+    <main>
+        <h4>Добро пожаловть в HobbyBoard!</h4>
+        <h5><a th:href="@{/login}">Войти</a></h5>
+        <h6>Еще не с нами? <a th:href="@{/register}">Присоединяся!</a></h6>
+        <hr/>
+        <h6><a href="/">На главную</a></h6>
+    </main>
+</body>
+</html>

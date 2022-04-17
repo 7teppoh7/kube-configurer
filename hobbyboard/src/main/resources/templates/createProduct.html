@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>HobbyBoard</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <script type="text/javascript">
+        var names;
+
+        $(document).ready(function () {
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/product/api/products",
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    names = data;
+                    $("#productName").autocomplete({
+                        minLength: 0,
+                        source: names
+                    });
+                },
+                error: function (e) {
+                }
+            });
+
+            $('#clickMe').click(function (event) {
+                if ($('#isIndependent').is(':checked')) {
+                    $('#searchBlock').show()
+                } else {
+                    $("#searchBlock").hide();
+                    $("#result").hide();
+                    $("#original").val(null);
+                }
+            });
+
+            $("#search-form").submit(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                fire_ajax_submit();
+
+            });
+
+            $("#search-form-id").submit(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                fire_ajax_submit_id();
+
+            });
+
+        });
+
+        function fire_ajax_submit() {
+
+            var search = {};
+            search["name"] = $("#productName").val();
+
+            $("#btn-search").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/product/api/search",
+                data: JSON.stringify(search),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+
+                    var json = "<h4 class='h4'>Продукт:</h4>" + "<div class='text-left'>" +
+                        "<p><a href='/product/" + data.result.id + "'>" + "<span class=h5>ID: </span>" + data.result.id + "</a></p>" +
+                        "<p><span class=h5>Имя: </span>" + data.result.name + "</p>" +
+                        "<p><span class=h5>Оригинальное имя: </span>" + data.result.originalName + "</p>" +
+                        "<p><span class=h5>Поставщик: </span>" + "<a href='/maker/" + data.result.maker.id + "'>" + data.result.maker.name + "</a></p></div>";
+                    $('#result').show();
+                    $('#result').html(json);
+                    $('#original').val(data.result.id);
+                    $("#btn-search").prop("disabled", false);
+                },
+                error: function (e) {
+                    $('#result').show();
+                    $('#result').html("<p>Совпадений найдено</p>");
+                    $("#btn-search").prop("disabled", false);
+                }
+            });
+
+        }
+
+        function fire_ajax_submit_id() {
+
+            var search = {}
+            search["id"] = $("#productId").val();
+
+            $("#btn-search-id").prop("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: "/product/api/search/id",
+                data: JSON.stringify(search),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+                    var json = "<h4 class='h4'>Продукт:</h4>" + "<div class='text-left'>" +
+                        "<p><a href='/product/" + data.result.id + "'>" + "<span class=h5>ID: </span>" + data.result.id + "</a></p>" +
+                        "<p><span class=h5>Имя: </span>" + data.result.name + "</p>" +
+                        "<p><span class=h5>Оригинальное имя: </span>" + data.result.originalName + "</p>" +
+                        "<p><span class=h5>Поставщик: </span>" + "<a href='/maker/" + data.result.maker.id + "'>" + data.result.maker.name + "</a></p></div>";
+                    $('#result').html(json);
+                    $('#original').val(data.result.id);
+                    $("#btn-search").prop("disabled", false);
+
+                },
+                error: function (e) {
+                    $('#result').show();
+                    $('#result').html("<p>Совпадений найдено</p>");
+                    $("#btn-search").prop("disabled", false);
+
+                }
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container" style="margin: auto">
+    <h1 class="h1">Добавление товара</h1>
+    <br>
+    <form enctype="multipart/form-data" th:object="${productDto}" method="post"
+          th:action="@{${'/admin/createProduct'}}">
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="name">Название</label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="Название" required
+                   autofocus th:field="*{name}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('originalName')}" th:errors="*{originalName}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label for="originalName">Оригинальное название</label>
+            <input type="text" class="form-control" name="originalName" id="originalName"
+                   placeholder="Оригинальное название" required th:field="*{originalName}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="price">Цена</label>
+            <input type="number" class="form-control" name="price" id="price" placeholder="Цена" required
+                   th:field="*{price}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('dateRelease')}" th:errors="*{dateRelease}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label for="dateRelease">Дата выхода</label>
+            <input type="date" class="form-control" name="dateRelease" id="dateRelease"
+                   placeholder="Дата выхода"
+                   required th:field="*{dateRelease}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="age">Возраст</label>
+            <input type="number" class="form-control" name="age" id="age" value="0" min="0" max="18" th:field="*{age}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('maker')}" th:errors="*{maker}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label>Производитель</label>
+            <br>
+            <th:block th:each="maker : ${makers}">
+                <p class="m-0">
+                    <input type="radio" class="form-group" name="maker" th:id="${'maker'+maker.id}"
+                           th:value="${maker.id}"
+                           required>
+                    <label class="form-check-label" th:for="${'maker'+maker.id}"
+                           th:text="${maker.name}">
+                    </label>
+                </p>
+            </th:block>
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('count')}" th:errors="*{count}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="count">Количество</label>
+            <input type="number" class="form-control" name="count" id="count" value="0" min="0" th:field="*{count}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label for="description">Описание (по желанию)</label>
+            <textarea class="form-control" name="description" id="description" th:field="*{description}"></textarea>
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('categories')}" th:errors="*{categories}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label>Категории</label>
+            <br>
+            <th:block th:each="category : ${categories}">
+                <p class="ml-4 mb-0">
+                    <input class="form-check-input" type="checkbox" name="categories"
+                           th:id="${'category' + category.id}" th:value="${category.id}">
+                    <label class="form-check-label" th:for="${'category' + category.id}"
+                           th:text="${category.name}">
+                    </label>
+                </p>
+            </th:block>
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${other}" th:text="${other}" class="alert alert-danger" role="alert"></div>
+            <div th:if="${#fields.hasErrors('minPlayers')}" th:errors="*{minPlayers}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label for="minPlayers">Минимальное количество игроков</label>
+            <input type="number" class="form-control" name="minPlayers" id="minPlayers" value="1" min="1"
+                   th:field="*{minPlayers}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('maxPlayers')}" th:errors="*{maxPlayers}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label for="maxPlayers">Максимальное количество игроков</label>
+            <input type="number" class="form-control" name="maxPlayers" id="maxPlayers" value="1" min="1"
+                   th:field="*{maxPlayers}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('minTime')}" th:errors="*{minTime}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="minTime">Минимальное время игры (мин)</label>
+            <input type="number" class="form-control" name="minTime" id="minTime" value="5" min="5"
+                   th:field="*{minTime}">
+        </div>
+        <div class="form-group mb-3">
+            <div th:if="${#fields.hasErrors('maxTime')}" th:errors="*{maxTime}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="maxTime">Максимальное время игры (мин)</label>
+            <input type="number" class="form-control" name="maxTime" id="maxTime" value="5" min="5"
+                   th:field="*{maxTime}">
+        </div>
+        <div class="form-group mb-3" id="clickMe">
+            <div th:if="${#fields.hasErrors('isDependence')}" th:errors="*{isDependence}" class="alert alert-danger"
+                 role="alert">Неправильно заполнено поле
+            </div>
+            <label for="isIndependent">Зависимый от другого продукта </label>
+            <input style="width: 20px; height: 20px" type="checkbox" class="form-group ml-1" id="isIndependent"
+                   name="isIndependent" th:field="*{isDependence}">
+        </div>
+        <div id="result" class="border border-info p-4" style="background-color: white; display: none;"></div>
+        <br/>
+        <input type="hidden" name="original" id="original">
+        <div class="form-group mb-5">
+            <div th:if="${#fields.hasErrors('photos')}" th:errors="*{photos}" class="alert alert-danger" role="alert">
+                Неправильно заполнено поле
+            </div>
+            <label for="photos">Фотографии (.png, .jpg)</label>
+            <input type="file" multiple class="form-control" name="photos" id="photos"
+                   accept="image/x-png,image/jpeg,image/jpeg" placeholder="Фото">
+        </div>
+        <div class="mb-5">
+            <input type="submit" class="btn btn-primary" value="Создать">
+            <a class="btn btn-secondary" th:href="@{${'/admin/createProduct'}}">Очистить</a>
+        </div>
+    </form>
+    <div id="searchBlock" style="display: none">
+        <h3 class="h3">Поиск оригинального продукта</h3>
+        <div class="mb-5 form-row">
+            <div class="form-group mb-3 col-5">
+                <form id="search-form">
+                    <div class="form-group form-group-lg">
+                        <label for="productName">Имя оригинального продукта</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="productName"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" id="bth-search"
+                                    class="btn btn-primary btn-lg">Найти по имени
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-2 text-center"><b>или</b></div>
+            <div class="form-group mb-3 col-5">
+                <form id="search-form-id">
+                    <div class="form-group form-group-lg">
+                        <label for="productName">ID оригиналного продукта</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="productId"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" id="bth-search-id"
+                                    class="btn btn-primary btn-lg">Найти по ID
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

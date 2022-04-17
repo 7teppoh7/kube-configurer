@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление заказами</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <script>
+        $(document).ready(function () {
+            $(".myButton").click(function (event) {
+                $("#modal-text").html($(event.currentTarget).val());
+            });
+
+            $(".myState").change(function (event) {
+                var request = {
+                    state: $(event.currentTarget).val(),
+                    id: event.currentTarget.name
+                };
+
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/admin/purchase/api/changeStatus",
+                    data: JSON.stringify(request),
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    cache: false,
+                    timeout: 600000
+                });
+                $("#input" + event.currentTarget.name).val($(event.currentTarget).val());
+                color();
+            });
+
+            color();
+        });
+
+        function color() {
+            var states = $(".state");
+            for (var i = 0; i < states.length; i++) {
+                var td = $("#" + states[i].name);
+                var curState = states[i].value;
+                if (curState === 'WAIT') $(td).attr("class", "table-warning");
+                if (curState === 'PAID') $(td).attr("class", "table-secondary");
+                if (curState === 'IN_WAY') $(td).attr("class", "table-primary");
+                if (curState === 'RECEIVED') $(td).attr("class", "table-success");
+                if (curState === 'CANCELED') $(td).attr("class", "table-danger");
+            }
+        }
+
+    </script>
+</head>
+<body class="movieBody">
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div>
+    <div class="container">
+        <h3>Заказы</h3>
+        <div class="row" style="background: white; border-radius: 10px;">
+            <table class="table">
+                <thread>
+                    <tr>
+                        <th>№</th>
+                        <th>ID</th>
+                        <th>Пользователь</th>
+                        <th>Дата</th>
+                        <th>Адрес</th>
+                        <th>Бонусы</th>
+                        <th>Сумма</th>
+                        <th>Чек</th>
+                        <th>Статус</th>
+                    </tr>
+                </thread>
+                <tbody>
+                <tr th:each="pur, index : ${purchases.content}">
+                    <td th:text="${index.count}"></td>
+                    <td th:text="${pur.id}"></td>
+                    <td th:text="${pur.user.email}"></td>
+                    <td th:text="${pur.purDate}"></td>
+                    <td>
+                        <button type="button" class="btn btn-link myButton" data-toggle="modal"
+                                data-target="#exampleModal"
+                                th:value="${pur.address}">
+                            Адрес заказа
+                        </button>
+                    </td>
+                    <td class="text-center">
+                        <span style="color: forestgreen" th:text="${pur.bonusGet}"></span>/<span style="color: #ff4c5b" th:text="${pur.bonusPaid}"></span> бонусов
+                    </td>
+                    <td class="text-center"><span><b th:text="${pur.total}"></b> ₽</span></td>
+                    <td>
+                        <a th:href="@{${'/pay/info?purchase=' + pur.id}}" target="_blank">
+                            Чек
+                        </a>
+                    </td>
+                    <td th:id="${pur.id}">
+                        <input type="hidden" class="state" th:id="${'input' + pur.id}" th:value="${pur.state.name()}" th:name="${pur.id}"/>
+                        <div class="form-group">
+                            <select class="form-control myState" th:name="${pur.id}">
+                                <option th:selected="${pur.state.name() == 'WAIT'}" th:value="${'WAIT'}">Ожидается оплата</option>
+                                <option th:selected="${pur.state.name() == 'PAID'}" th:value="${'PAID'}">Ожидается отправка</option>
+                                <option th:selected="${pur.state.name() == 'IN_WAY'}" th:value="${'IN_WAY'}">В пути</option>
+                                <option th:selected="${pur.state.name() == 'RECEIVED'}" th:value="${'RECEIVED'}">Получен</option>
+                                <option th:selected="${pur.state.name() == 'CANCELED'}" th:value="${'CANCELED'}">Отменен</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="container">
+                <hr/>
+                <ul class="nav nav-pills" th:if="${purchases.totalPages > 0}">
+                    <li class="nav-item m-auto"
+                        th:each="i : ${#numbers.sequence(1, purchases.totalPages)}">
+                        <a th:href="@{/admin/purchases(page=${i})}" th:text="${i}" class="nav-link"
+                           th:classappend="${currentPage}==${i}?'active':''"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADDRESS Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Адрес заказа</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"><p id="modal-text"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

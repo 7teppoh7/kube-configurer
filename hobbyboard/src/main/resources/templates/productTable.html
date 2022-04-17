@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Таблица товаров</title>
+    <script type="text/javascript">
+        window.onload = function () {
+            var myButton = document.getElementsByClassName("myButton");
+            for (var i = 0; i < myButton.length; i++) {
+                myButton[i].addEventListener('click', function (event) {
+                    document.getElementById("req").value = event.currentTarget.value;
+                });
+            }
+        };
+    </script>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body class="movieBody">
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div style="background: white; border-radius: 10px;">
+    <div class="mainContainer">
+        <div class="row col-12" style="text-align: center">
+            <table class="table table-hover">
+                <thread>
+                    <tr>
+                        <th>№</th>
+                        <th>Артикул</th>
+                        <th>Название</th>
+                        <th>Оригинальное название</th>
+                        <th>Возрастное ограничение</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th>Скидка</th>
+                        <th>Дата прибытия</th>
+                        <th>Рейтинг</th>
+                        <th>Информация</th>
+                        <th>Удалить</th>
+                        <th>Изменить</th>
+                    </tr>
+                </thread>
+                <tbody>
+                <tr th:each="product, index : ${products.content}">
+                    <td th:text="${index.count}"></td>
+                    <td th:text="${product.code}"></td>
+                    <td><a th:href="@{${'/product/' + product.id}}" th:text="${product.name}"></a></td>
+                    <td th:text="${product.originalName}"></td>
+                    <td th:text="${product.age} + '+'"></td>
+                    <td th:text="${product.price}"></td>
+                    <td th:text="${product.count}"></td>
+                    <td th:text="${product.discount}"></td>
+                    <td th:text="${product.delDate}"></td>
+                    <td th:text="${product.rate}"></td>
+                    <td>
+                        <a class="btn btn-primary" th:href="@{${'/product/' + product.id + '/info'}}">
+                            Инфо
+                        </a>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger myButton" data-toggle="modal"
+                                data-target="#exampleModal"
+                                th:value="${product.id}">
+                            Удалить
+                        </button>
+                    </td>
+                    <td>
+                        <a class="btn btn-info" th:href="@{${'/product/' + product.id + '/update'}}">
+                            Изменить
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="container">
+                <hr/>
+                <ul class="nav nav-pills" th:if="${products.totalPages > 0}">
+                    <li class="nav-item"
+                        th:each="i : ${#numbers.sequence(1, products.totalPages)}">
+                        <a th:href="@{/admin/productsTable(page=${i})}" th:text="${i}" class="nav-link"
+                           th:classappend="${currentPage}==${i}?'active':''"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Удаление</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"> Удалить этот продукт?
+            </div>
+            <form th:action="@{/admin/deleteProduct}" method="post">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <input type="hidden" id="req" name="product" value="-1"/>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

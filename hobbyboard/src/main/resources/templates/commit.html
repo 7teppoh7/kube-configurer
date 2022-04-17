@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Информация о товаре</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container" style="text-align: center">
+    <h1>Спасибо за покупку!</h1>
+    <p>На ваш баланс зачисленно <span th:text="${purchase.bonusGet}"></span> бонусов</p>
+    <br>
+    <p>Дальнейшее управление заказом осуществляется в личном кабинете</p>
+    <hr/>
+    <i>Чек доступен по ссылке: </i> <a th:href="@{${'/pay/info?purchase=' + purchase.id}}" target="_blank">электронный чек</a>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

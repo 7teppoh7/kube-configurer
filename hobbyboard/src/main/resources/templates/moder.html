@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Страница модерации</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body class="movieBody">
+<div th:replace="fragments/header :: myHeaderNav"></div>
+    <div class="container">
+        <div class="row">
+            <div class="list-group">
+                <a th:href="@{/admin/productsTable}" class="list-group-item list-group-item-action">Редактирование товаров</a>
+                <a th:href="@{/admin/createProduct}" class="list-group-item list-group-item-action">Добавить товар</a>
+                <a th:href="@{/admin/createMaker}" class="list-group-item list-group-item-action">Добавить производителя</a>
+                <a th:href="@{/admin/createCategory}" class="list-group-item list-group-item-action">Добавить категории</a>
+                <a th:href="@{/admin/purchases}" class="list-group-item list-group-item-action">Управление заказами</a>
+                <a th:href="@{/admin/statistics}" class="list-group-item list-group-item-action">Графические статистики</a>
+<!--                <a href="#" class="list-group-item list-group-item-action">Управление пользователями</a>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

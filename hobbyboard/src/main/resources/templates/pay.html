@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Оформление заказа</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <script>
+        $(document).ready(function () {
+            $("#bonusPaid").on('input keyup', function (e) {
+                var paid = $("#bonusPaid").val();
+                var old = $("#totalPrice").val();
+                if (old - paid > 0) $("#total").html(old - paid);
+                else $("#total").html(0);
+            });
+        })
+    </script>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container" style="margin-top: 100px;">
+    <div class="col-6 m-auto">
+        <h3 class="h3" th:text="${'Оплата заказа ID' + purchase.id}"></h3>
+        <hr/>
+        <p style="font-size: large">Состав покупки</p>
+        <table class="table table-hover">
+            <tbody>
+            <tr th:each="comp, index : ${purchase.compositions}">
+                <td th:text="${index.count}"></td>
+                <td>
+                    <p class="m-0">
+                    <b th:text="${comp.product.name}"></b>
+                    </p>
+                    <p class="m-0">
+                    <i th:text="${comp.product.originalName}"></i>
+                    </p>
+                </td>
+                <td class="text-right">
+                    <p class="m-0">
+                    <span>Цена: <s th:if="${comp.discount != 0}" th:text="${comp.price}"></s><span th:text="${comp.price - ((comp.price/100) * comp.discount)}"></span> ₽</span>
+                    </p>
+                    <p class="m-0">
+                    <span>Количество: <b th:text="${comp.count}"></b></span>
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <hr/>
+        <form enctype="multipart/form-data" th:object="${purchase}" method="post"
+              th:action="@{${'/pay/commit'}}">
+            <div class="form-group mb-3">
+                <div th:if="${#fields.hasErrors('bonusPaid')}" th:errors="*{bonusPaid}" class="alert alert-danger"
+                     role="alert">
+                    Неправильно заполнено поле
+                </div>
+                <div class="alert alert-danger" th:if="${error}" th:text="${error}" role="alert"></div>
+                <label for="bonusPaid">Оплатить бонусами (доступно <b th:text="${max}"></b>)</label>
+                <input type="number" class="form-control" name="bonusPaid" id="bonusPaid" min="0" th:max="${max}"
+                       th:readonly="${max == 0}"
+                       th:field="*{bonusPaid}">
+            </div>
+
+            <div class="form-group mb-3">
+                <p>Ваш кэшбэк: (<b th:text="${cashBack + '%'}"></b>)</p>
+                <label for="bonusPaid">Будет получено бонусов:</label><b class="ml-1" id="bonusGet"
+                                                                         th:text="${purchase.bonusGet}"></b>
+            </div>
+            <input type="hidden" id="totalPrice" th:value="${purchase.total}">
+            <div class="text-right">
+                <label for="bonusPaid">Итого:</label><span><b class="ml-1" id="total" th:text="${purchase.total}"></b><b> ₽</b></span>
+            </div>
+            <hr/>
+            <div class="text-right">
+                <input type="hidden" name="purchase" th:value="${purchase.id}"/>
+                <button class="btn btn-success" type="submit">Оплатить</button>
+            </div>
+        </form>
+        <hr/>
+        <form th:action="@{/pay/cancel}" method="post">
+            <input type="hidden" name="purchase" th:value="${purchase.id}"/>
+            <input type="submit" class="btn btn-link" value="Отменить заказ"/>
+        </form>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>
