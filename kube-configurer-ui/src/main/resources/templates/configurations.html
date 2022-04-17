@@ -3,184 +3,11 @@
       lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>HobbyBoard</title>
+    <title>K8S Configurer</title>
     <div th:replace="fragments/header :: myHeaderHead"></div>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<!--    <script type="text/javascript">-->
-<!--        var names;-->
-
-<!--        $(document).ready(function () {-->
-
-<!--            $.ajax({-->
-<!--                type: "POST",-->
-<!--                contentType: "application/json",-->
-<!--                url: "/product/api/products",-->
-<!--                dataType: 'json',-->
-<!--                cache: false,-->
-<!--                timeout: 600000,-->
-<!--                success: function (data) {-->
-<!--                    names = data;-->
-<!--                    $("#productName").autocomplete({-->
-<!--                        minLength: 0,-->
-<!--                        source: names-->
-<!--                    });-->
-<!--                },-->
-<!--                error: function (e) {-->
-<!--                    console.log("ERROR : ", e);-->
-<!--                }-->
-<!--            });-->
-
-<!--            $(".button-add").click(function (event) {-->
-
-<!--                //stop submit the form, we will post it manually.-->
-<!--                event.preventDefault();-->
-
-<!--                add_to_basket(event);-->
-
-<!--            });-->
-
-<!--            $(".button-remove").click(function (event) {-->
-
-<!--                //stop submit the form, we will post it manually.-->
-<!--                event.preventDefault();-->
-
-<!--                remove_from_basket(event);-->
-
-<!--            });-->
-
-<!--            $("#filter-form").submit(function () {-->
-<!--                $("#filter-form").find('input').each(function () {-->
-<!--                    var input = $(this);-->
-<!--                    if (!input.val()) {-->
-<!--                        input.remove(); // or input.prop('disabled', true);-->
-<!--                    }-->
-<!--                    if (input.val() != null && input.val() === 'on') {-->
-<!--                        input.val(true);-->
-<!--                    }-->
-<!--                });-->
-<!--                $("#filter-form").find('option').each(function () {-->
-<!--                    var input = $(this);-->
-<!--                    if (input.val() != null && input.val() === 'любая') {-->
-<!--                        input.prop('disabled', true);-->
-<!--                    }-->
-<!--                });-->
-<!--            });-->
-
-<!--            $("#search-form").submit(function () {-->
-<!--                $("#search-form").find('input').each(function () {-->
-<!--                    var input = $(this);-->
-<!--                    if (!input.val()) {-->
-<!--                        input.remove(); // or input.prop('disabled', true);-->
-<!--                    }-->
-<!--                });-->
-<!--            });-->
-
-<!--        });-->
-
-<!--        function fire_ajax_submit() {-->
-<!--            var search = {};-->
-<!--            search["name"] = $("#productName").val();-->
-
-<!--            $("#btn-search").prop("disabled", true);-->
-
-<!--            $.ajax({-->
-<!--                type: "POST",-->
-<!--                contentType: "application/json",-->
-<!--                url: "/product/api/search",-->
-<!--                data: JSON.stringify(search),-->
-<!--                dataType: 'json',-->
-<!--                cache: false,-->
-<!--                timeout: 600000,-->
-<!--                success: function (data) {-->
-
-<!--                    var json = "<h4>Ajax Response</h4>&lt;pre&gt;"-->
-<!--                        + JSON.stringify(data, null, 4) + "&lt;/pre&gt;";-->
-<!--                    $('#feedback').html(json);-->
-
-<!--                    console.log("SUCCESS : ", data);-->
-<!--                    $("#btn-search").prop("disabled", false);-->
-
-<!--                },-->
-<!--                error: function (e) {-->
-<!--                    console.log("ERROR : ", e);-->
-<!--                    $("#btn-search").prop("disabled", false);-->
-
-<!--                }-->
-<!--            });-->
-
-<!--        }-->
-
-<!--        function add_to_basket(event) {-->
-<!--            var product = {};-->
-<!--            product["id"] = $(event.currentTarget).val();-->
-
-
-<!--            $.ajax({-->
-<!--                type: "POST",-->
-<!--                contentType: "application/json",-->
-<!--                url: "/basket/api/add",-->
-<!--                data: JSON.stringify(product),-->
-<!--                dataType: 'json',-->
-<!--                xhrFields: {-->
-<!--                    withCredentials: true-->
-<!--                },-->
-<!--                cache: false,-->
-<!--                timeout: 600000,-->
-<!--                error: function (e) {-->
-<!--                    $(event.currentTarget).text("Добавлено");-->
-<!--                    $(event.currentTarget).attr("class", "btn btn-lblue btn-sm button-remove");-->
-<!--                    $(event.currentTarget).off();-->
-<!--                    $(".button-remove").click(function (event) {-->
-
-<!--                        //stop submit the form, we will post it manually.-->
-<!--                        event.preventDefault();-->
-
-<!--                        remove_from_basket(event);-->
-
-<!--                    });-->
-<!--                }-->
-<!--            });-->
-
-<!--        }-->
-
-<!--        function remove_from_basket(event) {-->
-<!--            event.preventDefault();-->
-<!--            var product = {};-->
-<!--            product["id"] = $(event.currentTarget).val();-->
-
-<!--            //$("#btn-search").prop("disabled", true);-->
-
-<!--            $.ajax({-->
-<!--                type: "POST",-->
-<!--                contentType: "application/json",-->
-<!--                url: "/basket/api/remove",-->
-<!--                data: JSON.stringify(product),-->
-<!--                dataType: 'json',-->
-<!--                xhrFields: {-->
-<!--                    withCredentials: true-->
-<!--                },-->
-<!--                cache: false,-->
-<!--                timeout: 600000,-->
-<!--                error: function (e) {-->
-<!--                    $(event.currentTarget).text("В корзину");-->
-<!--                    $(event.currentTarget).attr("class", "btn btn-lblue btn-sm button-add");-->
-<!--                    $(event.currentTarget).off();-->
-<!--                    $(".button-add").click(function (event) {-->
-
-<!--                        //stop submit the form, we will post it manually.-->
-<!--                        event.preventDefault();-->
-
-<!--                        add_to_basket(event);-->
-
-<!--                    });-->
-<!--                }-->
-<!--            });-->
-
-<!--        }-->
-<!--    </script>-->
-
 </head>
 <body>
 <div th:replace="fragments/header :: myHeaderNav"></div>
@@ -191,7 +18,7 @@
                 <h5 class="h5">Ищете что-то конкретное?</h5>
             </div>
             <div>
-                <form class="input-group" id="search-form" type="get" th:action="@{/}">
+                <form class="input-group" id="search-form" type="get" th:action="@{/configurations/}">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Введите название..."
                                aria-label="Введите название..."
@@ -274,7 +101,10 @@
                     </div>
                     <div class="input-group" style="text-align: right">
                         <div class="mt-2">
-                            <i th:text="${'Количество товаров: ' + products.size()}"></i>
+                            <i th:text="${'Количество конфигураций: ' + configurations.size()}"></i>
+                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
+                                    data-target="#saveModal">+
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -283,63 +113,30 @@
                 <div class="ui-112 text-center" style="width: 100%">
                     <!-- container -->
                     <div class="row">
-                        <th:block th:each="prod : ${products}">
+                        <th:block th:each="config : ${configurations}">
                             <div class="myProduct">
                                 <!-- Image Box #1 Item -->
                                 <div class="ui-112-item">
-                                    <div class="ui-112-img">
-                                        <!-- Image -->
-                                        <img class="img-thumbnail"
-                                             th:src="@{${'/img/' + prod.mainPhoto.photo}}" th:alt="${prod.name}"
-                                             alt="" height="172"
-                                             width="250">
-                                        <div class="image-hover">
-                                            <!-- Image Caption -->
-                                            <div class="image-caption">
-                                                <a th:href="@{${'/img/' + prod.mainPhoto.photo}}"
-                                                   class="lightbox"><i class="fa fa-search bg-lblue"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Image Box #1 caption -->
                                     <div class="ui-112-cap">
                                         <!-- Heading-->
-                                        <h4 class="mb-0"><a th:href="@{${'/product/' + prod.id}}"
-                                                            th:text="${prod.name}"></a></h4>
-                                        <p class="mt-0"><i th:text="${prod.originalName}"></i></p>
-                                        <p th:text="${prod.price} + '₽'"></p>
-                                        <!-- Button -->
-                                        <th:block th:if="${prod.count.equals(0)}">
-                                            <button class="btn btn-secondary btn-sm disabled"
-                                                    th:value="${prod.getId()}">Отсутствует
-                                            </button>
-                                        </th:block>
-                                        <th:block th:unless="${prod.count.equals(0)}">
-                                            <th:block th:if="${productsInBasket.contains(prod)}">
-                                                <button th:href="@{${'/toBasket'}}"
-                                                        class="btn btn-lblue btn-sm button-remove"
-                                                        th:value="${prod.getId()}">Добавлено
-                                                </button>
-                                            </th:block>
-                                            <th:block th:unless="${productsInBasket.contains(prod)}">
-                                                <button th:href="@{${'/toBasket'}}"
-                                                        class="btn btn-lblue btn-sm button-add"
-                                                        th:value="${prod.getId()}">В корзину
-                                                </button>
-                                            </th:block>
-                                        </th:block>
+                                        <h4 class="mb-0"><a th:href="@{${'/configuration/' + config.id}}"
+                                                            th:text="${config.name}"></a></h4>
+                                        <p th:text="${'RAM: ' + config.memoryRequest + 'Mi'}"></p>
+                                        <p th:text="${'CPU: ' + config.cpuRequest + 'm'}"></p>
+                                        <p th:text="${'CPU limit: ' + config.cpuLimit}"></p>
+                                        <p th:text="${'Replicas: ' + config.replicas}"></p>
+                                        <p><i th:text="${'Количество сервисов: ' + config.services.size()}"></i></p>
                                     </div>
                                 </div>
                             </div>
                         </th:block>
                     </div>
-
                 </div>
             </div>
         </div>
         <div class="col-2 p-0">
             <div style="background-color: white;">
-                <form class="m-3" method="get" th:action="@{/}" id="filter-form" th:object="${searchDto}">
+                <form class="m-3" method="get" th:action="@{/configurations/}" id="filter-form" th:object="${searchDto}">
                     <label for="minPrice" class="mt-2"><b>Цена, ₽</b></label>
                     <div class="form-row mb-3">
                         <div class="col">
@@ -439,7 +236,7 @@
                             <button class="btn btn-secondary" type="submit">Фильтр</button>
                         </div>
                         <div class="col">
-                            <a class="btn btn-link" th:href="@{/}">Сбросить</a>
+                            <a class="btn btn-link" th:href="@{/configurations/}">Сбросить</a>
                         </div>
                     </div>
                     <br>
@@ -448,6 +245,7 @@
         </div>
     </div>
 </div>
+<div th:replace="fragments/saveConfigModal :: saveConfigModal"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
 <script>
     $(document).ready(function () {

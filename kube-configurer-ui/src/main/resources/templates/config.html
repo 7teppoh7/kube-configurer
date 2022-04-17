@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Configuration</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container mainContainer" style="margin-top: 100px;">
+    <div class="row">
+        <div class="col-10">
+            <h1 class="h1" th:text="${config.name}"></h1>
+            <p><a class="d-inline-block mr-2" th:each="tag : ${config.tags}" th:href="@{'/?tag=' + ${tag.id}}"
+                  th:text="${tag.name}" style="font-style: italic; text-decoration: none; color: #332f2c;"></a></p>
+        </div>
+        <div class="col-2">
+            <p class="mb-0">ID:</p>
+            <i th:text="${config.id}"></i>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">
+            <div style="font-size: 1.2em">
+                <h3 class="h2">Параметры:</h3>
+                <p>
+                    <b class="mb-0">Оперативная память (RAM): </b>
+                    <span th:text="${config.memoryRequest + 'Mi'}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Частота процессора (CPU): </b>
+                    <span th:text="${config.cpuRequest + 'm'}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Количество ядер: </b>
+                    <span th:text="${config.cpuLimit}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Количество реплик: </b>
+                    <span th:text="${config.replicas}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Параметры запуска: </b>
+                    <span th:text="${config.runArgs}"></span>
+                </p>
+            </div>
+        </div>
+        <div class="col-5">
+            <div style="font-size: 1.2em">
+                <h3 class="h2">Свойства конфигурации:</h3>
+                <p>
+                    <b class="mb-0">Дата последнего обновления: </b>
+                    <span th:text="${config.lastUpdate}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Конфиугация по умолчанию: </b>
+                    <span th:text="${config.isDefault}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Дата начала: </b>
+                    <span th:text="${config.startDate}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Дата конца: </b>
+                    <span th:text="${config.endDate}"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn btn-primary">Применить</button>
+        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#saveModal">Изменить</button>
+        <a th:href="@{${'/deleteConfig/' + config.id}}" class="btn btn-outline-danger">Удалить</a>
+    </div>
+</div>
+<div th:replace="fragments/saveConfigModal :: saveConfigModal"></div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

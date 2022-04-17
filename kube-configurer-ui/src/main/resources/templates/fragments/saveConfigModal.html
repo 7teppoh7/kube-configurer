@@ -1,0 +1,112 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="ru">
+<body>
+<div th:fragment="saveConfigModal">
+    <div class="modal fade" id="saveModal" tabindex="-1" data-bs-backdrop="static" role="dialog"
+         aria-labelledby="saveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveModalLabel">Сохранить конфигурацию</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form th:object="${config}">
+                        <span>Заполните поля или </span><label class="label-like-link" for="file">выберите файл</label>
+                        <input type="file" class="form-control d-none" id="file">
+                        <input type="hidden" class="form-control d-none" id="id" th:field="*{id}">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="name" class="col-form-label">Имя</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Имя конфигурации"
+                                           th:field="*{name}"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="replicas" class="col-form-label">Количество реплик</label>
+                                    <input type="number" min="0" class="form-control" id="replicas" placeholder="Например: 1"
+                                           th:field="*{replicas}"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="memoryRequest" class="col-form-label">Количество оперативной памяти</label>
+                                    <div class="input-group mb-3">
+                                        <input type="number" min="0" class="form-control" id="memoryRequest"
+                                               placeholder="Например: 256" aria-label="Memory Request"
+                                               aria-describedby="miAddon-1" th:field="*{memoryRequest}" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="miAddon-1">Mi</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="memoryLimit" class="col-form-label">Максимальное количество оперативной
+                                        памяти</label>
+                                    <div class="input-group mb-3">
+                                        <input type="number" min="0" class="form-control" id="memoryLimit"
+                                               placeholder="Например: 512"  aria-label="Memory Request"
+                                               aria-describedby="miAddon-2" th:field="*{memoryLimit}">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="miAddon-2">Mi</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="cpuRequest" class="col-form-label">Количество милли-CPU</label>
+                                    <div class="input-group mb-3">
+                                        <input type="number" min="0" class="form-control" id="cpuRequest"
+                                               placeholder="Например: 100" aria-label="CPU Request"
+                                               aria-describedby="mAddon-1" th:field="*{cpuRequest}" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="mAddon-1">m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="cpuLimit" class="col-form-label">Максимальное количество милли-CPU
+                                        (m)</label>
+                                    <div class="input-group mb-3">
+                                        <input type="number" min="0" class="form-control" id="cpuLimit"
+                                               placeholder="Например: 200" aria-label="CPU Request"
+                                               aria-describedby="mAddon-2" th:field="*{cpuLimit}">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" id="mAddon-2">m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="runArgs" class="col-form-label">Параметры запуска:</label>
+                            <textarea class="form-control" id="runArgs"
+                                      placeholder="Например: -XX:+UseSerialGC" th:field="*{runArgs}"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-success" id="btn-create-config">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

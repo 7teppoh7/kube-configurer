@@ -1,34 +1,49 @@
-.mini_ava{
+label.label-like-link {
+    color: blue;
+    cursor: pointer;
+}
+
+label:hover.label-like-link {
+    text-decoration: underline;
+}
+
+/*=============================SOMETHING OLD=============================*/
+
+.mini_ava {
     width: 40px;
     height: 40px;
     margin-right: 10px;
 }
 
-.myProduct{
+.myProduct {
     text-align: center;
     margin: 1rem;
 }
 
-.myProduct p{
+.myProduct p {
     margin-bottom: 0;
 }
 
-.ui-112{
+.ui-112 {
     margin: 0 0 60px 0;
 }
-.ui-112 .ui-112-item{
-    text-align:center;
-    margin:10px auto;
-    max-width:250px;
+
+.ui-112 .ui-112-item {
+    text-align: center;
+    margin: 10px auto;
+    max-width: 250px;
 }
-.ui-112 .ui-112-img{
+
+.ui-112 .ui-112-img {
     position: relative;
     z-index: 10;
     overflow: hidden;
 }
+
 .ui-112 img {
     transition: all 2s ease;
 }
+
 .ui-112 .image-hover {
     position: absolute;
     top: 0;
@@ -36,53 +51,61 @@
     z-index: 5;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     opacity: 0;
     transition: all 0.5s ease;
 }
+
 .ui-112 .ui-112-item:hover .image-hover {
     opacity: 1;
 }
-.ui-112  .image-caption {
+
+.ui-112 .image-caption {
     margin-top: 30%;
     text-align: center;
 }
-.ui-112 .image-caption a i{
-    display:inline-block;
-    width:35px;
-    height:35px;
-    border-radius:2px;
-    margin:0px 2px;
-    line-height:35px;
-    color:#fff;
+
+.ui-112 .image-caption a i {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    border-radius: 2px;
+    margin: 0px 2px;
+    line-height: 35px;
+    color: #fff;
 }
-.ui-112 .ui-112-cap{
-    background:#fff;
-    padding:12px 20px 15px;
-    text-align:center;
-    border:1px solid #e7e7e7;
-    border-top:0px;
+
+.ui-112 .ui-112-cap {
+    background: #fff;
+    padding: 12px 20px 15px;
+    text-align: center;
+    border: 1px solid #e7e7e7;
+    border-top: 0px;
 }
-.ui-112 h4{
-    font-size:14px;
-    font-weight:600;
-    text-transform:uppercase;
+
+.ui-112 h4 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
 }
-.ui-112 h4 a{
+
+.ui-112 h4 a {
     font-size: 1.2em;
-    color:black;
+    color: black;
 }
-.ui-112 .btn{
-    margin-top:5px;
+
+.ui-112 .btn {
+    margin-top: 5px;
 }
 
 @media all {
 
 }
 
-body{
+body {
     background-color: #f2f2f2;
 }
+
 .btn-lblue {
     color: #fff;
     font-weight: bold;
@@ -93,12 +116,12 @@ body{
     border-radius: 3px;
 }
 
-.btn-lblue:hover{
+.btn-lblue:hover {
     color: whitesmoke;
     background-color: #f58d76;
 }
 
-.button-remove{
+.button-remove {
     background-color: gray;
 }
 
@@ -109,16 +132,17 @@ input::-webkit-inner-spin-button {
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-.red{
+.red {
     color: red;
 }
-#product-button{
+
+#product-button {
     width: 100%;
     height: 60px;
     font-size: 1.4em;
 }
 
-.incr{
+.incr {
     padding: 0;
     width: 25px;
     height: 25px;
