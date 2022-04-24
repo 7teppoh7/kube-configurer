@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сервис</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container mainContainer" style="margin-top: 100px;">
+    <div class="row">
+        <div class="col-9">
+            <h5 class="display-4">Информация о сервисе</h5>
+            <hr>
+            <div style="font-size: 1.2em">
+                <p>
+                    <b class="mb-0">Имя сервиса: </b>
+                    <span th:text="${service.deploymentName}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Пространство имён: </b>
+                    <span th:text="${service.namespace}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">ID: </b>
+                    <span th:text="${service.id}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">PaaS ID: </b>
+                    <span th:text="${service.paasId}"></span>
+                </p>
+                <p>
+                    <b class="mb-0">Последнее обновление: </b>
+                    <span th:if="${service.lastAction != null}" th:text="${dateFormatter.format(service.lastAction.date)}"></span>
+                    <span th:if="${service.lastAction == null}">нет данных</span>
+                </p>
+                <b class="mb-0">Конфигурация сервиса: </b>
+                <th:block th:if="${service.configuration != null}" th:with="config = ${service.configuration}">
+                    <a class="btn btn-link" data-toggle="collapse" href="#collapseExample" role="button"
+                       aria-expanded="false" aria-controls="collapseExample">
+                        Показать
+                    </a>
+                    <div class="collapse border" id="collapseExample">
+                        <div class="m-2">
+                            <p>
+                                <b class="mb-0">ID: </b>
+                                <a th:href="@{${'/configuration/' + config.id}}" th:text="${config.id}"></a>
+                            </p>
+                            <p>
+                                <b class="mb-0">Имя: </b>
+                                <span th:text="${config.name}"></span>
+                            </p>
+                            <p>
+                                <b class="mb-0">Последнее обновление: </b>
+                                <span th:text="${config.lastUpdate}"></span>
+                            </p>
+                            <p>
+                                <b class="mb-0">Количество реплик: </b>
+                                <span th:text="${config.replicas}"></span>
+                            </p>
+                            <div class="row">
+                                <div class="col">
+                                    <p>
+                                        <b class="mb-0">Запрос RAM: </b>
+                                        <span th:text="${config.memoryRequest + 'Mi'}"></span>
+                                    </p>
+                                    <p>
+                                        <b class="mb-0">Запрос CPU: </b>
+                                        <span th:text="${config.cpuRequest + 'm'}"></span>
+                                    </p>
+                                </div>
+                                <div class="col">
+                                    <p>
+                                        <b class="mb-0">Лимит RAM: </b>
+                                        <span th:text="${config.memoryLimit}"></span>
+                                    </p>
+                                    <p>
+                                        <b class="mb-0">Лимит CPU: </b>
+                                        <span th:text="${config.cpuLimit}"></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1"><b>Параметры запуска:</b></label>
+                                <textarea class="form-control" disabled readonly id="exampleFormControlTextarea1"
+                                          rows="2"
+                                          th:text="${config.runArgs}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+                <th:block th:if="${service.configuration == null}" th:with="config = ${service.configuration}">
+                    <span>конфигурация не применена</span>
+                </th:block>
+            </div>
+        </div>
+        <div class="col-3">
+            <h5 class="display-4">Лейблы</h5>
+            <hr>
+            <div>
+                <p th:each="tag : ${service.labels}">
+                    <b th:text="${tag.key + ' = '}"></b>
+                    <span class="font-italic" th:text="${tag.value}"></span>
+                </p>
+            </div>
+            <h5 class="display-4">Действия</h5>
+            <hr>
+            <div class="btn-group-vertical">
+                <button type="button" class="btn btn-lg btn-success" name="btn-service-configure"
+                        th:value="${service.id}">
+                    Применить
+                </button>
+                <!--                TODO: if not exist-->
+                <a th:if="${false}" th:href="@{${'/deleteService/' + service.id}}"
+                   class="btn btn-lg btn-danger">Удалить</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <h5 class="display-4">История операций</h5>
+        <hr>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>ID конфигурации</th>
+                <th>Имя конфигурации</th>
+                <th>Время</th>
+                <th>Подробности</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody id="config-history-table">
+            <tr th:each="history : ${histories}">
+                <td>
+                    <a th:href="@{${'/configuration/' + history.configuration.id}}"
+                       th:text="${history.configuration.id}"></a>
+                </td>
+                <td>
+                    <p class="fw-normal mb-1" th:text="${history.configuration.name}"></p>
+                </td>
+                <td>
+                    <p class="fw-normal mb-1" th:text="${dateFormatter.format(history.date)}"></p>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-link" name="btn-show-message-modal"
+                            data-toggle="modal" data-target="#showMessageModal" th:value="${history.message}">
+                        Подробнее
+                    </button>
+                </td>
+                <td>
+                    <span th:if="${history.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).IN_PROGRESS}"
+                          class="badge badge-pill badge-warning" th:text="${history.status}"></span>
+                    <span th:if="${history.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).FAILED}"
+                          class="badge badge-pill badge-danger" th:text="${history.status}"></span>
+                    <span th:if="${history.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).SUCCESS}"
+                          class="badge badge-pill badge-success" th:text="${history.status}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div th:replace="fragments/modals :: showMessageModal"></div>
+<!--    <div th:replace="fragments/modals :: saveConfigModal"></div>-->
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

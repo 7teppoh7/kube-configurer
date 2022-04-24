@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>K8S Configurer</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <label for="ns-select"><b>Пространство имён</b></label>
+            <select class="form-control" id="ns-select">
+                <option value="_all">любое</option>
+                <option th:each="namespace : ${namespaces}" th:text="${namespace}" th:value="${namespace}"></option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div th:replace="fragments/serviceTable :: serviceTable"></div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

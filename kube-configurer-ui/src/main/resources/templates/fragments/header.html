@@ -25,11 +25,14 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item" th:classappend="${products}?'active':''">
+                    <li class="nav-item" th:classappend="${isConfigurations}?'active':''">
                         <a class="nav-link" th:href="@{/}">Конфигурации</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:classappend="${baskets}?'active':''" th:href="@{/basket}">Сервисы</a>
+                        <a class="nav-link" th:classappend="${isServices}?'active':''" th:href="@{/services}">Сервисы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${isConfigure}?'active':''" th:href="@{/configure}">Применение</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:classappend="${user}?'active':''" th:href="@{/profile}">Планировщик</a>

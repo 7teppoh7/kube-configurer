@@ -53,52 +53,6 @@
                     </th:block>
                     <input type="hidden" name="isDependence" th:if="${searchDto.isDependence!=null}"
                            th:value="${searchDto.isDependence}">
-                    <div class="input-group">
-                        <div class="mt-2">
-                            <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle d-inline-block" type="button"
-                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                    Сортировать по
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <button class="btn-link dropdown-item" name="sort"
-                                            th:classappend="${searchDto.sort.equals('rateD')?'disabled':''}"
-                                            th:value="'rateD'">рейтингу (по убыванию)
-                                    </button>
-                                    <button class="btn-link dropdown-item" name="sort"
-                                            th:classappend="${searchDto.sort.equals('rateA')?'disabled':''}"
-                                            th:value="'rateA'">рейтингу (по возрастанию)
-                                    </button>
-                                    <button class="btn-link dropdown-item" name="sort"
-                                            th:classappend="${searchDto.sort.equals('priceD')?'disabled':''}"
-                                            th:value="'priceD'">цене (по убыванию)
-                                    </button>
-                                    <button class="btn-link dropdown-item" name="sort"
-                                            th:classappend="${searchDto.sort.equals('priceA')?'disabled':''}"
-                                            th:value="'priceA'">цене (по возрастанию)
-                                    </button>
-                                    <button class="btn-link dropdown-item" name="sort"
-                                            th:classappend="${searchDto.sort.equals('dateD')?'disabled':''}"
-                                            th:value="'dateD'">дате (по убыванию)
-                                    </button>
-                                    <button class="btn-link dropdown-item" name="sort"
-                                            th:classappend="${searchDto.sort.equals('dateA')?'disabled':''}"
-                                            th:value="'dateA'">дате (по возрастанию)
-                                    </button>
-                                </div>
-                                <div class="d-inline-block" th:switch="${searchDto.sort}">
-                                    <div th:case="'rateD'">рейтингу (по убыванию)</div>
-                                    <div th:case="'rateA'">рейтингу (по возрастанию)</div>
-                                    <div th:case="'priceD'">цене (по убыванию)</div>
-                                    <div th:case="'priceA'">цене (по возрастанию)</div>
-                                    <div th:case="'dateD'">дате (по убыванию)</div>
-                                    <div th:case="'dateA'">дате (по возрастанию)</div>
-                                    <div th:case="null"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="input-group" style="text-align: right">
                         <div class="mt-2">
                             <i th:text="${'Количество конфигураций: ' + configurations.size()}"></i>
@@ -122,10 +76,11 @@
                                         <h4 class="mb-0"><a th:href="@{${'/configuration/' + config.id}}"
                                                             th:text="${config.name}"></a></h4>
                                         <p th:text="${'RAM: ' + config.memoryRequest + 'Mi'}"></p>
+                                        <p th:text="${'RAM лимит: ' + config.memoryLimit + 'Mi'}"></p>
                                         <p th:text="${'CPU: ' + config.cpuRequest + 'm'}"></p>
-                                        <p th:text="${'CPU limit: ' + config.cpuLimit}"></p>
-                                        <p th:text="${'Replicas: ' + config.replicas}"></p>
-                                        <p><i th:text="${'Количество сервисов: ' + config.services.size()}"></i></p>
+                                        <p th:text="${'CPU лимит: ' + config.cpuLimit}"></p>
+                                        <p th:text="${'Репилики: ' + config.replicas}"></p>
+<!--                                        <p><i th:text="${'Количество сервисов: ' + config.services.size()}"></i></p>-->
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +92,7 @@
         <div class="col-2 p-0">
             <div style="background-color: white;">
                 <form class="m-3" method="get" th:action="@{/configurations/}" id="filter-form" th:object="${searchDto}">
-                    <label for="minPrice" class="mt-2"><b>Цена, ₽</b></label>
+                    <label for="minPrice" class="mt-2"><b>Оперативная память</b></label>
                     <div class="form-row mb-3">
                         <div class="col">
                             <input type="number" class="form-control" name="minPrice" id="minPrice"
@@ -150,7 +105,7 @@
                                    th:placeholder="${'до ' + maximumPrice}">
                         </div>
                     </div>
-                    <label for="minPrice"><b>Число игроков</b></label>
+                    <label for="minPrice"><b>Количество CPU</b></label>
                     <div class="form-row mb-3">
                         <div class="col">
                             <input type="number" class="form-control" name="minPlayers" id="minPlayers"
@@ -163,7 +118,7 @@
                                    th:placeholder="${'до ' + maximumPlayers}">
                         </div>
                     </div>
-                    <label for="minAge"><b>Возраст</b></label>
+                    <label for="minAge"><b>Лимит оперативной памяти</b></label>
                     <div class="form-row mb-3">
                         <div class="col">
                             <input type="number" class="form-control" name="minAge" id="minAge" th:field="*{minAge}"
@@ -171,65 +126,26 @@
                         </div>
                         <div class="col">
                             <input type="number" class="form-control" name="maxAge" id="maxAge" th:field="*{maxAge}"
-                                   th:placeholder="${'до 18'}">
+                                   th:placeholder="${'до 100'}">
                         </div>
                     </div>
-                    <label for="ageCategory"><b>Возрастная категория</b></label>
-                    <div class="input-group mb-3">
-                        <select class="form-control" id="ageCategory" name="ageCategory">
-                            <option>любая</option>
-                            <option value="G">G</option>
-                            <option value="PG">PG</option>
-                            <option value="R">R</option>
-                            <option value="X">X</option>
-                        </select>
+                    <label for="minPrice"><b>Лимит CPU</b></label>
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <input type="number" class="form-control" name="minPlayers" id="minCpu"
+                                   th:field="*{minPlayers}"
+                                   th:placeholder="${'от 1'}">
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" name="maxPlayers" id="maxCpu"
+                                   th:field="*{maxPlayers}"
+                                   th:placeholder="${'до ' + maximumPlayers}">
+                        </div>
                     </div>
-                    <label for="rate"><b>Рейтинг</b></label>
+                    <label for="rate"><b>Количество реплик</b></label>
                     <div class="input-group mb-3">
                         <input type="number" class="form-control" name="rate" id="rate" step="0.1" th:field="*{rate}"
                                th:placeholder="${'от 0'}">
-                    </div>
-                    <label for="minTime"><b>Время партии, мин</b></label>
-                    <div class="form-row mb-3">
-                        <div class="col">
-                            <input type="number" class="form-control" name="minTime" id="minTime" th:field="*{minTime}"
-                                   th:placeholder="${'от 5'}">
-                        </div>
-                        <div class="col">
-                            <input type="number" class="form-control" name="maxTime" id="maxTime" th:field="*{maxTime}"
-                                   th:placeholder="${'до ' + maximumTime}">
-                        </div>
-                    </div>
-                    <label><b>Категории</b></label>
-                    <div class="mb-3">
-                        <div class="form-check" th:each="category : ${categories}">
-                            <input class="form-check-input" type="checkbox" name="category"
-                                   th:id="${'category' + category.id}" th:value="${category.id}"
-                                   th:checked="${searchDto.category==null?false:searchDto.category.contains(category)}">
-                            <label class="form-check-label" th:for="${'category' + category.id}"
-                                   th:text="${category.name}">
-                            </label>
-                        </div>
-                    </div>
-                    <label><b>Производитель</b></label>
-                    <div class="mb-3">
-                        <div class="form-check" th:each="maker : ${makers}">
-                            <input class="form-check-input" type="checkbox" name="maker" th:id="${'maker' + maker.id}"
-                                   th:value="${maker.id}"
-                                   th:checked="${searchDto.maker==null?false:searchDto.maker.contains(maker)}">
-                            <label class="form-check-label" th:for="${'maker' + maker.id}" th:text="${maker.name}">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="isDependence" id="isDependence"
-                                   th:checked="${searchDto.isDependence}">
-                            <label class="form-check-label" for="isDependence"><b>
-                                Только дополнения
-                            </b>
-                            </label>
-                        </div>
                     </div>
                     <div class="form-row">
                         <div class="col">
@@ -245,7 +161,7 @@
         </div>
     </div>
 </div>
-<div th:replace="fragments/saveConfigModal :: saveConfigModal"></div>
+<div th:replace="fragments/modals :: saveConfigModal"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
 <script>
     $(document).ready(function () {

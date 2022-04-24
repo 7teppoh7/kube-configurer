@@ -3,78 +3,129 @@
       lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Configuration</title>
+    <title>Конфигурация</title>
     <div th:replace="fragments/header :: myHeaderHead"></div>
 </head>
 <body>
 <div th:replace="fragments/header :: myHeaderNav"></div>
 <div class="container mainContainer" style="margin-top: 100px;">
     <div class="row">
-        <div class="col-10">
-            <h1 class="h1" th:text="${config.name}"></h1>
-            <p><a class="d-inline-block mr-2" th:each="tag : ${config.tags}" th:href="@{'/?tag=' + ${tag.id}}"
-                  th:text="${tag.name}" style="font-style: italic; text-decoration: none; color: #332f2c;"></a></p>
-        </div>
-        <div class="col-2">
-            <p class="mb-0">ID:</p>
-            <i th:text="${config.id}"></i>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-5">
+        <div class="col-9">
+            <h5 class="display-4">Информация о конфигурации</h5>
+            <hr>
             <div style="font-size: 1.2em">
-                <h3 class="h2">Параметры:</h3>
                 <p>
-                    <b class="mb-0">Оперативная память (RAM): </b>
-                    <span th:text="${config.memoryRequest + 'Mi'}"></span>
+                    <b class="mb-0">ID: </b>
+                    <span th:text="${config.id}"></span>
                 </p>
                 <p>
-                    <b class="mb-0">Частота процессора (CPU): </b>
-                    <span th:text="${config.cpuRequest + 'm'}"></span>
+                    <b class="mb-0">Имя: </b>
+                    <span th:text="${config.name}"></span>
                 </p>
                 <p>
-                    <b class="mb-0">Количество ядер: </b>
-                    <span th:text="${config.cpuLimit}"></span>
+                    <b class="mb-0">Последнее обновление: </b>
+                    <span th:text="${config.lastUpdate}"></span>
                 </p>
                 <p>
                     <b class="mb-0">Количество реплик: </b>
                     <span th:text="${config.replicas}"></span>
                 </p>
-                <p>
-                    <b class="mb-0">Параметры запуска: </b>
-                    <span th:text="${config.runArgs}"></span>
-                </p>
+                <div class="row">
+                    <div class="col">
+                        <p>
+                            <b class="mb-0">Запрос RAM: </b>
+                            <span th:text="${config.memoryRequest + 'Mi'}"></span>
+                        </p>
+                        <p>
+                            <b class="mb-0">Запрос CPU: </b>
+                            <span th:text="${config.cpuRequest + 'm'}"></span>
+                        </p>
+                    </div>
+                    <div class="col">
+                        <p>
+                            <b class="mb-0">Лимит RAM: </b>
+                            <span th:text="${config.memoryLimit}"></span>
+                        </p>
+                        <p>
+                            <b class="mb-0">Лимит CPU: </b>
+                            <span th:text="${config.cpuLimit}"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1"><b>Параметры запуска:</b></label>
+                    <textarea class="form-control" disabled readonly id="exampleFormControlTextarea1" rows="2"
+                              th:text="${config.runArgs}"></textarea>
+                </div>
             </div>
         </div>
-        <div class="col-5">
-            <div style="font-size: 1.2em">
-                <h3 class="h2">Свойства конфигурации:</h3>
-                <p>
-                    <b class="mb-0">Дата последнего обновления: </b>
-                    <span th:text="${config.lastUpdate}"></span>
-                </p>
-                <p>
-                    <b class="mb-0">Конфиугация по умолчанию: </b>
-                    <span th:text="${config.isDefault}"></span>
-                </p>
-                <p>
-                    <b class="mb-0">Дата начала: </b>
-                    <span th:text="${config.startDate}"></span>
-                </p>
-                <p>
-                    <b class="mb-0">Дата конца: </b>
-                    <span th:text="${config.endDate}"></span>
-                </p>
+        <div class="col-3">
+            <h5 class="display-4">Теги</h5>
+            <hr>
+            <div>
+                <p class="font-italic font-weight-bold" th:each="tag : ${config.tags}" th:text="${tag.name}"></p>
+            </div>
+            <h5 class="display-4">Действия</h5>
+            <hr>
+            <div class="btn-group-vertical">
+                <button type="button" class="btn btn-lg btn-success" name="btn-config-configure"
+                        th:value="${config.id}">
+                    Применить
+                </button>
+                <button type="button" class="btn btn-lg btn-info" data-toggle="modal" data-target="#saveModal">
+                    Изменить
+                </button>
+                <a th:href="@{${'/deleteConfig/' + config.id}}" class="btn btn-lg btn-danger">Удалить</a>
             </div>
         </div>
     </div>
     <div class="row">
-        <button type="button" class="btn btn btn-primary">Применить</button>
-        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#saveModal">Изменить</button>
-        <a th:href="@{${'/deleteConfig/' + config.id}}" class="btn btn-outline-danger">Удалить</a>
+        <!--        <div th:replace="fragments/configHistoryTable :: configHistoryTable"></div>-->
+        <h5 class="display-4">История операций</h5>
+        <hr>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>ID сервиса</th>
+                <th>Имя сервиса</th>
+                <th>Координаты</th>
+                <th>Время</th>
+                <th>Подробности</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody id="config-history-table">
+            <tr th:each="history : ${histories}">
+                <td>
+                    <a th:href="@{${'/service/' + history.service.id}}"
+                       th:text="${history.service.id}"></a>
+                </td>
+                <td>
+                    <p class="fw-normal mb-1" th:text="${history.service.deploymentName}"></p>
+                </td>
+                <td>
+                    <p class="fw-normal mb-1" th:text="${history.service.namespace}"></p>
+                </td>
+                <td>
+                    <p class="fw-normal mb-1" th:text="${dateFormatter.format(history.date)}"></p>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-link" name="btn-show-message-modal" data-toggle="modal" data-target="#showMessageModal" th:value="${history.message}">
+                        Подробнее
+                    </button>
+                </td>
+                <td>
+                    <span th:if="${history.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).IN_PROGRESS}" class="badge badge-pill badge-warning" th:text="${history.status}"></span>
+                    <span th:if="${history.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).FAILED}" class="badge badge-pill badge-danger" th:text="${history.status}"></span>
+                    <span th:if="${history.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).SUCCESS}" class="badge badge-pill badge-success" th:text="${history.status}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-<div th:replace="fragments/saveConfigModal :: saveConfigModal"></div>
+<div th:replace="fragments/modals :: showMessageModal"></div>
+<div th:replace="fragments/modals :: saveConfigModal"></div>
 <div th:replace="fragments/footer :: myFooter"></div>
 </body>
 </html>

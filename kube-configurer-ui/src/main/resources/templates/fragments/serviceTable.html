@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<table class="table table-hover" th:fragment="serviceTable">
+    <input type="hidden" th:value="${isConfigure}" id="input-hidden-is-configure">
+    <thead>
+    <tr>
+        <th>Имя</th>
+        <th>Координаты</th>
+        <th>Конфигурация</th>
+        <th>Последнее обновление</th>
+        <th>Статус</th>
+        <th>Действие</th>
+    </tr>
+    </thead>
+    <tbody id="serviceTable">
+    <tr th:each="service : ${services}">
+        <td>
+            <a th:href="@{${'/service/' + service.id}}"
+               th:text="${service.deploymentName}"></a>
+        </td>
+        <td>
+            <p class="fw-normal mb-1" th:text="${service.namespace}"></p>
+        </td>
+        <td>
+            <th:block th:if="${service.configuration != null}">
+                <a th:href="@{${'/configuration/' + service.configuration.id}}"
+                   th:text="${service.configuration.name}"></a>
+            </th:block>
+            <th:block th:if="${service.configuration == null}">
+                <p>Конфигурация отсутствует</p>
+            </th:block>
+        </td>
+        <td>
+            <span th:if="${service.lastAction != null}" th:text="${dateFormatter.format(service.lastAction.date)}"></span>
+            <span th:if="${service.lastAction == null}">Нет данных</span>
+        </td>
+        <td th:with="lastAction = ${service.lastAction}">
+            <span th:if="${lastAction == null}" class="badge badge-pill badge-secondary">Нет данных</span>
+            <span th:if="${lastAction != null && lastAction.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).IN_PROGRESS}" class="badge badge-pill badge-warning" th:text="${lastAction.status}"></span>
+            <span th:if="${lastAction != null && lastAction.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).FAILED}" class="badge badge-pill badge-danger" th:text="${lastAction.status}"></span>
+            <span th:if="${lastAction != null && lastAction.status == T(ru.sstu.kubeconfigurerui.entity.ApplyStatus).SUCCESS}" class="badge badge-pill badge-success" th:text="${lastAction.status}"></span>
+        </td>
+        <td>
+            <th:block th:if="${isConfigure}">
+                <input class="form-check-input" type="radio" name="selectedService"
+                       th:id="${'selectedService' + service.id}"
+                       th:value="${service.id}">
+                <label class="form-check-label" th:for="${'selectedService' + service.id}">Выбрать</label>
+            </th:block>
+            <th:block th:if="${isServices}">
+                <button type="button" class="btn btn-sm btn-success" name="btn-service-configure"
+                        th:value="${service.id}">
+                    Применить
+                </button>
+            </th:block>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Configuration</title>
+    <div th:replace="fragments/header :: myHeaderHead"></div>
+</head>
+<body>
+<div th:replace="fragments/header :: myHeaderNav"></div>
+<div class="container mainContainer" style="margin-top: 100px;">
+    <div class="row">
+        <h1>1. Выберите сервис</h1>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <label for="ns-select"><b>Пространство имён</b></label>
+            <select class="form-control" id="ns-select">
+                <option value="_all">любое</option>
+                <option th:each="namespace : ${namespaces}" th:text="${namespace}" th:value="${namespace}"></option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div th:replace="fragments/serviceTable :: serviceTable"></div>
+    </div>
+    <div class="row">
+        <h1>2. Выберите конфигурацию</h1>
+    </div>
+    <div class="row">
+        <form class="input-group" id="search-form" type="get" th:action="@{/configurations/}">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Введите название..."
+                       aria-label="Введите название..."
+                       aria-describedby="button-addon2" name="search" id="productName"
+                       th:value="${searchDto.search}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Поиск</button>
+                </div>
+            </div>
+            <input type="hidden" name="minPrice" th:if="${searchDto.minPrice!=null}"
+                   th:value="${searchDto.minPrice}">
+            <input type="hidden" name="maxPrice" th:if="${searchDto.maxPrice!=null}"
+                   th:value="${searchDto.maxPrice}">
+            <input type="hidden" name="minPlayers" th:if="${searchDto.minPlayers!=null}"
+                   th:value="${searchDto.minPlayers}">
+            <input type="hidden" name="maxPlayers" th:if="${searchDto.maxPlayers!=null}"
+                   th:value="${searchDto.maxPlayers}">
+            <input type="hidden" name="minAge" th:if="${searchDto.minAge!=null}" th:value="${searchDto.minAge}">
+            <input type="hidden" name="maxAge" th:if="${searchDto.maxAge!=null}" th:value="${searchDto.maxAge}">
+            <input type="hidden" name="ageCategory" th:if="${searchDto.ageCategory!=null}"
+                   th:value="${searchDto.ageCategory}">
+            <input type="hidden" name="rate" th:if="${searchDto.rate!=null}" th:value="${searchDto.rate}">
+            <input type="hidden" name="minTime" th:if="${searchDto.minTime!=null}"
+                   th:value="${searchDto.minTime}">
+            <input type="hidden" name="maxTime" th:if="${searchDto.maxTime!=null}"
+                   th:value="${searchDto.maxTime}">
+            <th:block th:each="maker : ${searchDto.maker}">
+                <input type="hidden" name="maker" th:value="${maker.id}">
+            </th:block>
+            <th:block th:each="category : ${searchDto.category}">
+                <input type="hidden" name="category" th:value="${category.id}">
+            </th:block>
+            <input type="hidden" name="isDependence" th:if="${searchDto.isDependence!=null}"
+                   th:value="${searchDto.isDependence}">
+        </form>
+        <div class="row">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Имя</th>
+                    <th>Запрос RAM</th>
+                    <th>Лимит RAM</th>
+                    <th>Запрос CPU</th>
+                    <th>Лимит CPU</th>
+                    <th>Количество реплик</th>
+                    <th>Выбрать</th>
+                </tr>
+                </thead>
+                <tbody id="configTable">
+                <tr th:each="config : ${configurations}">
+                    <td><a th:href="@{${'/configuration/' + config.id}}" th:text="${config.id}"></a></td>
+                    <td th:text="${config.name}"></td>
+                    <td th:text="${config.memoryRequest + 'Mi'}">
+                    </td>
+                    <td th:text="${config.memoryLimit + 'Mi'}">
+                    </td>
+                    <td th:text="${config.cpuRequest + 'm'}">
+                    </td>
+                    <td th:text="${config.cpuLimit + 'm'}">
+                    </td>
+                    <td th:text="${config.replicas}">
+                    </td>
+                    <td>
+                        <input class="form-check-input" type="radio" name="selectedConfig"
+                               th:id="${'selectedConfig' + config.id}"
+                               th:value="${config.id}">
+                        <label class="form-check-label" th:for="${'selectedConfig' + config.id}">Выбрать</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#saveModal">Добавить новую
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <h1>3. Готово к применению!</h1>
+    </div>
+    <button type="button" class="btn btn-success btn-lg" id="btn-configure">Применить</button>
+</div>
+<div th:replace="fragments/modals :: saveConfigModal"></div>
+<div th:replace="fragments/footer :: myFooter"></div>
+</body>
+</html>

@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import ru.sstu.kubeconfigurerui.dto.SearchDTO;
 import ru.sstu.kubeconfigurerui.entity.Configuration;
+import ru.sstu.kubeconfigurerui.service.ConfigurationHistoryService;
 import ru.sstu.kubeconfigurerui.service.ConfigurationService;
 
 import javax.validation.Valid;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.UUID;
 
 @Slf4j
@@ -21,6 +25,7 @@ import java.util.UUID;
 public class ConfigurationController {
 
     private final ConfigurationService configurationService;
+    private final ConfigurationHistoryService configurationHistoryService;
 
     @GetMapping("favicon.ico")
     @ResponseBody
@@ -45,12 +50,15 @@ public class ConfigurationController {
         model.addAttribute("makers", new ArrayList<>());
         model.addAttribute("config", new Configuration());
         model.addAttribute("configurations", configurationService.findAll());
+        model.addAttribute("isConfigurations", true);
         return "configurations";
     }
 
     @GetMapping("/configuration/{configId}")
     public String getConfiguration(Model model, @PathVariable UUID configId) {
         model.addAttribute("config", configurationService.findById(configId));
+        model.addAttribute("histories", configurationHistoryService.findByConfigId(configId));
+        model.addAttribute("dateFormatter", DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.forLanguageTag("ru")));
         return "config";
     }
 
